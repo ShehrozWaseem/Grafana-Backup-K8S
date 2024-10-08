@@ -1,0 +1,9 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-backup-config
+  # namespace: monitoring
+data:
+  GRAFANA_URL: "http://10.111.114.86"
+  GCS_BUCKET_NAME: "axin_test_grafana_backup"
+  VERIFY_SSL: "false"

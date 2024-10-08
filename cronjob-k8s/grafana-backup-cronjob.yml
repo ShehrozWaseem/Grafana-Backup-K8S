@@ -1,0 +1,43 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: grafana-backup
+  # namespace: monitoring
+spec:
+  schedule: "0 0 * * *"
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: grafana-backup
+              image: shehroz85waseem/grafana-backup-gcs:latest
+              imagePullPolicy: Always
+              env:
+                - name: GRAFANA_URL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: grafana-backup-config
+                      key: GRAFANA_URL
+                - name: GRAFANA_TOKEN
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-backup-secrets
+                      key: GRAFANA_TOKEN
+                - name: GCS_BUCKET_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: grafana-backup-config
+                      key: GCS_BUCKET_NAME
+                - name: VERIFY_SSL
+                  valueFrom:
+                    configMapKeyRef:
+                      name: grafana-backup-config
+                      key: VERIFY_SSL
+                - name: SERVICE_ACCOUNT_KEY_JSON
+                  valueFrom:
+                    secretKeyRef:
+                      name: grafana-backup-secrets
+                      key: SERVICE_ACCOUNT_KEY_JSON
+              # Remove volume mounts since we're not using volumes
+          restartPolicy: OnFailure
